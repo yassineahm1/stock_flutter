@@ -4,6 +4,7 @@ import 'package:stock_flutter/core/theme/app_theme.dart';
 import 'package:stock_flutter/features/categories/application/category_providers.dart';
 import 'package:stock_flutter/features/categories/domain/entities/category.dart';
 import 'package:stock_flutter/shared/widgets/app_bottom_nav.dart';
+import 'package:stock_flutter/shared/widgets/app_glass_background.dart';
 
 class CategoryListPage extends ConsumerWidget {
   const CategoryListPage({super.key});
@@ -13,7 +14,7 @@ class CategoryListPage extends ConsumerWidget {
     final categoriesAsync = ref.watch(categoriesStreamProvider);
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         backgroundColor: AppTheme.surfaceColor,
         automaticallyImplyLeading: false,
@@ -43,7 +44,8 @@ class CategoryListPage extends ConsumerWidget {
           ),
         ],
       ),
-      body: categoriesAsync.when(
+      body: AppGlassBackground(
+        child: categoriesAsync.when(
         loading: () => const Center(
             child:
                 CircularProgressIndicator(color: AppTheme.primaryColor)),
@@ -85,7 +87,7 @@ class CategoryListPage extends ConsumerWidget {
                 _CategoryCard(category: categories[i]),
           );
         },
-      ),
+      ),),
       bottomNavigationBar: const AppBottomNav(currentIndex: 3),
     );
   }
@@ -246,8 +248,16 @@ class _CategoryCard extends ConsumerWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.cardColor,
+        color: AppTheme.cardColor.withValues(alpha: 0.65),
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Row(
         children: [

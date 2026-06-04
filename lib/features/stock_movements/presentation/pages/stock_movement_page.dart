@@ -7,6 +7,7 @@ import 'package:stock_flutter/features/products/domain/entities/product.dart';
 import 'package:stock_flutter/features/stock_movements/application/stock_movement_providers.dart';
 import 'package:stock_flutter/features/stock_movements/domain/entities/stock_movement.dart';
 import 'package:stock_flutter/shared/widgets/app_bottom_nav.dart';
+import 'package:stock_flutter/shared/widgets/app_glass_background.dart';
 
 class StockMovementPage extends ConsumerStatefulWidget {
   const StockMovementPage({super.key});
@@ -18,6 +19,7 @@ class StockMovementPage extends ConsumerStatefulWidget {
 class _StockMovementPageState extends ConsumerState<StockMovementPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  bool _isHistoryExpanded = false;
 
   @override
   void initState() {
@@ -36,7 +38,7 @@ class _StockMovementPageState extends ConsumerState<StockMovementPage>
     final movementsAsync = ref.watch(movementsStreamProvider);
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         backgroundColor: AppTheme.surfaceColor,
         automaticallyImplyLeading: false,
@@ -64,7 +66,8 @@ class _StockMovementPageState extends ConsumerState<StockMovementPage>
           ],
         ),
       ),
-      body: Column(
+      body: AppGlassBackground(
+        child: Column(
         children: [
           Expanded(
             child: TabBarView(
@@ -77,74 +80,114 @@ class _StockMovementPageState extends ConsumerState<StockMovementPage>
           ),
 
           // ── Historique des mouvements ──────────────────────────────────
-          Container(
-            height: 280,
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeInOut,
+            height: _isHistoryExpanded ? 280 : 54,
             decoration: BoxDecoration(
-              color: AppTheme.surfaceColor,
+              color: AppTheme.surfaceColor.withValues(alpha: 0.9),
               border: Border(
-                  top: BorderSide(color: Colors.white.withOpacity(0.06))),
+                  top: BorderSide(color: Colors.white.withValues(alpha: 0.08))),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Historique récent',
-                        style: TextStyle(
-                          color: AppTheme.textPrimary,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
+                InkWell(
+                  onTap: () => setState(() => _isHistoryExpanded = !_isHistoryExpanded),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            const Text(
+                              'Historique récent',
+                              style: TextStyle(
+                                color: AppTheme.textPrimary,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Icon(
+                              _isHistoryExpanded
+                                  ? Icons.keyboard_arrow_down_rounded
+                                  : Icons.keyboard_arrow_up_rounded,
+                              color: AppTheme.textSecondary,
+                              size: 18,
+                            ),
+                          ],
                         ),
-                      ),
-                      movementsAsync.when(
-                        data: (m) => Text(
-                          '${m.length} mouvement(s)',
-                          style: TextStyle(
-                              color: AppTheme.textSecondary, fontSize: 12),
-                        ),
-                        loading: () => const SizedBox.shrink(),
-                        error: (_, __) => const SizedBox.shrink(),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: movementsAsync.when(
-                    loading: () => const Center(
-                        child: CircularProgressIndicator(
-                            color: AppTheme.primaryColor)),
-                    error: (e, _) => Center(
-                      child: Text('Erreur: $e',
-                          style: TextStyle(color: AppTheme.errorColor)),
-                    ),
-                    data: (movements) {
-                      if (movements.isEmpty) {
-                        return Center(
-                          child: Text(
-                            'Aucun mouvement',
-                            style: TextStyle(
-                                color: AppTheme.textSecondary, fontSize: 13),
+                        if (_isHistoryExpanded)
+                          movementsAsync.when(
+                            data: (m) => Text(
+                              '${m.length} mouvement(s)',
+                              style: TextStyle(
+                                  color: AppTheme.textSecondary, fontSize: 12),
+                            ),
+                            loading: () => const SizedBox.shrink(),
+                            error: (_, __) => const SizedBox.shrink(),
+                          )
+                        else
+                          movementsAsync.when(
+                            data: (m) => m.isNotEmpty
+                                ? Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: AppTheme.primaryColor.withValues(alpha: 0.2),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Text(
+                                      '${m.length}',
+                                      style: const TextStyle(
+                                          color: AppTheme.primaryColor,
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  )
+                                : const SizedBox.shrink(),
+                            loading: () => const SizedBox.shrink(),
+                            error: (_, __) => const SizedBox.shrink(),
                           ),
-                        );
-                      }
-                      return ListView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        itemCount: movements.take(20).length,
-                        itemBuilder: (ctx, i) =>
-                            _HistoryTile(movement: movements[i]),
-                      );
-                    },
+                      ],
+                    ),
                   ),
                 ),
+                if (_isHistoryExpanded)
+                  Expanded(
+                    child: movementsAsync.when(
+                      loading: () => const Center(
+                          child: CircularProgressIndicator(
+                              color: AppTheme.primaryColor)),
+                      error: (e, _) => Center(
+                        child: Text('Erreur: $e',
+                            style: TextStyle(color: AppTheme.errorColor)),
+                      ),
+                      data: (movements) {
+                        if (movements.isEmpty) {
+                          return Center(
+                            child: Text(
+                              'Aucun mouvement',
+                              style: TextStyle(
+                                  color: AppTheme.textSecondary, fontSize: 13),
+                            ),
+                          );
+                        }
+                        return ListView.builder(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          itemCount: movements.take(20).length,
+                          itemBuilder: (ctx, i) =>
+                              _HistoryTile(movement: movements[i]),
+                        );
+                      },
+                    ),
+                  ),
               ],
             ),
           ),
         ],
-      ),
+      ),),
       bottomNavigationBar: const AppBottomNav(currentIndex: 2),
     );
   }
@@ -520,8 +563,9 @@ class _HistoryTile extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: AppTheme.cardColor,
+        color: AppTheme.cardColor.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Row(
         children: [

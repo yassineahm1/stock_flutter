@@ -8,6 +8,7 @@ import 'package:stock_flutter/features/products/application/product_providers.da
 import 'package:stock_flutter/features/products/domain/entities/product.dart';
 import 'package:stock_flutter/core/utils/constants.dart';
 import 'package:stock_flutter/shared/widgets/app_bottom_nav.dart';
+import 'package:stock_flutter/shared/widgets/app_glass_background.dart';
 
 class ProductListPage extends ConsumerStatefulWidget {
   const ProductListPage({super.key});
@@ -24,7 +25,7 @@ class _ProductListPageState extends ConsumerState<ProductListPage> {
     final productsAsync = ref.watch(productsStreamProvider);
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         backgroundColor: AppTheme.surfaceColor,
         title: const Text(
@@ -54,8 +55,9 @@ class _ProductListPageState extends ConsumerState<ProductListPage> {
           ),
         ],
       ),
-      body: Column(
-        children: [
+      body: AppGlassBackground(
+        child: Column(
+          children: [
           // ── Barre de recherche ────────────────────────────────────────
           Padding(
             padding: const EdgeInsets.all(16),
@@ -137,7 +139,7 @@ class _ProductListPageState extends ConsumerState<ProductListPage> {
             ),
           ),
         ],
-      ),
+      ),),
       bottomNavigationBar: const AppBottomNav(currentIndex: 1),
     );
   }
@@ -167,11 +169,20 @@ class _ProductCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.cardColor,
+        color: AppTheme.cardColor.withValues(alpha: 0.65),
         borderRadius: BorderRadius.circular(16),
-        border: isLow
-            ? Border.all(color: const Color(0xFFFF6B6B).withOpacity(0.4))
-            : null,
+        border: Border.all(
+          color: isLow
+              ? const Color(0xFFFF6B6B).withValues(alpha: 0.5)
+              : Colors.white.withValues(alpha: 0.05),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Row(
         children: [

@@ -22,20 +22,22 @@ class StockMovementModel extends StockMovement {
     DocumentSnapshot<Map<String, dynamic>> doc,
     Product product,
   ) {
-    final data = doc.data()!;
+    final data = doc.data() ?? {};
     return StockMovementModel(
       id: doc.id,
       product: product,
       type: data['type'] == AppConstants.movementTypeEntry
           ? MovementType.entry
           : MovementType.sale,
-      quantity: data['quantity'] as int,
+      quantity: (data['quantity'] as num?)?.toInt() ?? 0,
       unitPrice: data['unitPrice'] != null
           ? (data['unitPrice'] as num).toDouble()
           : null,
       note: data['note'] as String?,
-      ownerId: data['ownerId'] as String,
-      date: (data['date'] as Timestamp).toDate(),
+      ownerId: data['ownerId'] as String? ?? '',
+      date: data['date'] != null
+          ? (data['date'] as Timestamp).toDate()
+          : DateTime.now(),
     );
   }
 

@@ -10,6 +10,7 @@ import 'package:stock_flutter/features/products/application/product_providers.da
 import 'package:stock_flutter/features/stock_movements/application/stock_movement_providers.dart';
 import 'package:stock_flutter/features/stock_movements/domain/entities/stock_movement.dart';
 import 'package:stock_flutter/shared/widgets/app_bottom_nav.dart';
+import 'package:stock_flutter/shared/widgets/app_glass_background.dart';
 
 class DashboardPage extends ConsumerWidget {
   const DashboardPage({super.key});
@@ -21,9 +22,10 @@ class DashboardPage extends ConsumerWidget {
     final movementsAsync = ref.watch(movementsStreamProvider);
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
-      body: SafeArea(
-        child: CustomScrollView(
+      backgroundColor: Colors.transparent,
+      body: AppGlassBackground(
+        child: SafeArea(
+          child: CustomScrollView(
           slivers: [
             // ── AppBar ──────────────────────────────────────────────────
             SliverToBoxAdapter(
@@ -321,8 +323,7 @@ class DashboardPage extends ConsumerWidget {
           ],
         ),
       ),
-
-      // ── Bottom Navigation ────────────────────────────────────────────────
+    ),
       bottomNavigationBar: const AppBottomNav(currentIndex: 0),
     );
   }
@@ -350,9 +351,16 @@ class _KpiCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.cardColor,
+        color: AppTheme.cardColor.withValues(alpha: 0.6),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withOpacity(0.2)),
+        border: Border.all(color: color.withValues(alpha: 0.25)),
+        boxShadow: [
+          BoxShadow(
+            color: color.withValues(alpha: 0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: wide
           ? Row(
@@ -438,8 +446,9 @@ class _MovementTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: AppTheme.cardColor,
+          color: AppTheme.cardColor.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
         ),
         child: Row(
           children: [

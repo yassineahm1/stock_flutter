@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:stock_flutter/core/router/app_router.dart';
 import 'package:stock_flutter/core/theme/app_theme.dart';
 import 'package:stock_flutter/features/auth/application/auth_providers.dart';
+import 'package:stock_flutter/shared/widgets/app_glass_background.dart';
 
 class RegisterPage extends ConsumerStatefulWidget {
   const RegisterPage({super.key});
@@ -78,8 +79,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage>
     });
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
-      body: SafeArea(
+      backgroundColor: Colors.transparent,
+      body: AppGlassBackground(
+        child: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 40),
@@ -328,8 +330,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage>
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildTextField({
     required TextEditingController controller,

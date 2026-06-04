@@ -4,6 +4,8 @@ import 'package:stock_flutter/features/products/data/services/product_repository
 import 'package:stock_flutter/features/stock_movements/data/remote/stock_movement_model.dart';
 import 'package:stock_flutter/features/stock_movements/domain/entities/stock_movement.dart';
 import 'package:stock_flutter/features/stock_movements/domain/repositories/stock_movement_repository.dart';
+import 'package:stock_flutter/features/products/domain/entities/product.dart';
+import 'package:stock_flutter/features/categories/domain/entities/category.dart';
 
 /// Implémentation du StockMovementRepository via Firestore
 /// Équivalent à data/services/ du professeur
@@ -88,11 +90,36 @@ class StockMovementRepositoryImpl implements StockMovementRepository {
     List<QueryDocumentSnapshot<Map<String, dynamic>>> docs,
     String ownerId,
   ) async {
+    final products = await _productRepository.getAllProducts(ownerId);
     final movements = <StockMovement>[];
     for (final doc in docs) {
-      final productId = doc.data()['productId'] as String;
-      final products = await _productRepository.getAllProducts(ownerId);
-      final product = products.firstWhere((p) => p.id == productId);
+      final data = doc.data();
+      final productId = data['productId'] as String?;
+      if (productId == null) continue;
+
+      final product = products.firstWhere(
+        (p) => p.id == productId,
+        orElse: () => Product(
+          id: productId,
+          name: 'Produit supprimé',
+          price: 0.0,
+          quantity: 0,
+          lowStockThreshold: 0,
+          category: Category(
+            id: 'unknown',
+            name: 'Inconnu',
+            ownerId: ownerId,
+            createdAt: DateTime.now(),
+          ),
+          ownerId: ownerId,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        ),
+      );
+
+      final dateTimestamp = data['date'] as Timestamp?;
+      if (dateTimestamp == null) continue;
+
       movements.add(StockMovementModel.fromFirestore(doc, product));
     }
     return movements;
