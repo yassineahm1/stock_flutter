@@ -3,21 +3,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:stock_flutter/core/router/app_router.dart';
 import 'package:stock_flutter/core/theme/app_theme.dart';
-// import 'firebase_options.dart'; // Décommenter après flutterfire configure
+import 'firebase_options.dart';
 
 /// Point d'entrée de l'application Stock Flutter
-/// Équivalent à MainActivity.java du professeur (point de départ)
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialisation Firebase
-  // await Firebase.initializeApp(
-  //   options: DefaultFirebaseOptions.currentPlatform,
-  // );
-  // TODO: Décommenter après avoir exécuté 'flutterfire configure'
+  // Initialisation Firebase avec le projet mybudget-2c631
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   runApp(
-    // ProviderScope = conteneur Riverpod (injection de dépendances)
     const ProviderScope(
       child: StockFlutterApp(),
     ),

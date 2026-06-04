@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "352695354014",
+    "project_id": "mybudget-2c631",
+    "storage_bucket": "mybudget-2c631.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:352695354014:android:80783af0e4abaf6fb8b18f",
+        "android_client_info": {
+          "package_name": "esisa.ac.ma.stock_flutter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "352695354014-jjc69u69r1tiguo05sd60dmt35ch357o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcbKxmEfeF6GVyifY55nFzXBK-nnK7ufg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "352695354014-jjc69u69r1tiguo05sd60dmt35ch357o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
